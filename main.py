@@ -1,18 +1,14 @@
-import streamlit as st, tempfile, os
-from TTS.api import TTS
+import streamlit as st, edge_tts, tempfile, asyncio, os
 
-@st.cache_resource
-def load_tts():
-    # 多语言多音色模型，CPU 可跑
-    return TTS("tts_models/multilingual/multi-dataset/xtts_v2", gpu=False)
+voices = [v["Name"] for v in asyncio.run(edge_tts.list_voices()) if "zh-CN" in v["Name"]]
+text  = st.text_area("文本", "哈喽，Edge-TTS 在 Streamlit Cloud 上跑得很欢")
+voice = st.selectbox("音色", voices)
 
-tts = load_tts()
-text = st.text_area("输入文本", "你好，欢迎关注我的 GitHub！")
-speaker = st.selectbox("选择音色",
-      ["Claribel Dervla", "Damien Black", "Serena Wang", "Xiaoyu 小宇"])  # 16 种内置
+async def gen():
+    tmp = tempfile.mktemp(suffix=".mp3")
+    await edge_tts.Communicate(text, voice).save(tmp)
+    st.audio(tmp)
+    os.remove(tmp)
 
 if st.button("生成"):
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
-        tts.tts_to_file(text=text, speaker=speaker, file_path=tmp.name)
-        st.audio(tmp.name)
-        os.remove(tmp.name)
+    asyncio.run(gen())
