@@ -1,2 +1,2 @@
 streamlit
-TTS
+TTS==0.15.6
