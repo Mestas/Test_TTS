@@ -5,7 +5,7 @@ from TTS.api import TTS
 @st.cache_resource(show_spinner="正在加载模型…")
 def load():
     # 确认存在的模型名
-    return TTS("tts_models/zh-CN/baker/tacotron2-DDC-ph")
+    return TTS("tts_models/zh-CN/baker/tacotron2-DDC")
 
 tts = load()
 text = st.text_area("输入中文", "今天天气真不错")
