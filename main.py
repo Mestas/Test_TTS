@@ -1,6 +1,6 @@
 import streamlit as st, requests, tempfile, os
 
-API = "https://github.com/coqui-ai/TTS/tree/dev/TTS"
+API = "https://github.com/Mestas/TTS"
 text = st.text_input("文字", "你好世界")
 voice = "zh-CN-XiaoxiaoNeural"
 
