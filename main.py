@@ -1,6 +1,7 @@
-import requests
-API = "https://tts-kokoro-onnx-fastapi.up.railway.app"
-payload = {"text": "你好，私有 TTS！", "voice": "zf_001", "speed": 1.0}
-r = requests.post(API, json=payload)
-with open("output.wav", "wb") as f:
-    f.write(r.content)
+import requests, streamlit as st
+# API = "https://tts-kokoro-onnx-fastapi.up.railway.app/generate-speech"
+API = "https://tts-kokoro-onnx-fastapi.up.railway.app/generate-speech"
+text = st.text_input("文字", "你好，私有 TTS")
+if st.button("合成"):
+    r = requests.post(API, json={"text": text, "voice": "zf_001", "speed": 1.0})
+    st.audio(r.content, format="audio/wav")
