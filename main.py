@@ -1,16 +1,14 @@
-# app.py
-import streamlit as st, tempfile, os
-from TTS.api import TTS
+import requests, tempfile, os, streamlit as st
 
-@st.cache_resource(show_spinner="正在加载模型…")
-def load():
-    # 确认存在的模型名
-    return TTS("tts_models/zh-CN/baker/tacotron2-DDC")
+API = "https://edge-tts.vercel.app/api"
+text = st.text_input("文字", "你好世界")
+voice = "zh-CN-XiaoxiaoNeural"
 
-tts = load()
-text = st.text_area("输入中文", "今天天气真不错")
-if st.button("生成"):
-    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
-        tts.tts_to_file(text=text, file_path=f.name)
-        st.audio(f.name)
-        os.remove(f.name)
+if st.button("朗读"):
+    r = requests.post(API, json={"text": text, "voice": voice}, timeout=30)
+    r.raise_for_status()
+    tmp = tempfile.mktemp(suffix=".mp3")
+    with open(tmp, "wb") as f:
+        f.write(r.content)
+    st.audio(tmp)
+    os.remove(tmp)
