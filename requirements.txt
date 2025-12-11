@@ -1,2 +1,2 @@
-TTS
-gTTs
+streamlit
+edge-tts
