@@ -1,6 +1,6 @@
 import streamlit as st, requests, tempfile, os
 
-API = "kokoro-onnx-fastapi.railway.internal"
+API = "https://tts-kokoro-onnx-fastapi-production.up.railway.app/generate-speech"
 text = st.text_input("文字", "你好世界")
 voice = "zh-CN-XiaoxiaoNeural"
 
