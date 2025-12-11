@@ -1,22 +1,14 @@
-import streamlit as st, edge_tts, tempfile, asyncio, os
+import streamlit as st, tempfile, os
+from TTS.api import TTS
 
-# 1. 选音色
-voices = [v["Name"] for v in asyncio.run(edge_tts.list_voices()) if "zh-CN" in v["Name"]]
-text  = st.text_area("文本", "哈喽，UA 伪装一下就能过 CDN")
-voice = st.selectbox("音色", voices)
+@st.cache_resource
+def load():
+    return TTS("tts_models/zh-CN/baker/tacotron2-DDC")
 
-# 2. 合成
-async def gen():
-    tmp = tempfile.mktemp(suffix=".mp3")
-    # 关键：加浏览器 UA
-    communicate = edge_tts.Communicate(
-        text, voice,
-        headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                               "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0"}
-    )
-    await communicate.save(tmp)
-    st.audio(tmp)
-    os.remove(tmp)
-
+tts = load()
+text = st.text_area("文本", "离线模型再也不怕 CDN 阻断")
 if st.button("生成"):
-    asyncio.run(gen())
+    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
+        tts.tts_to_file(text=text, file_path=f.name)
+        st.audio(f.name)
+        os.remove(f.name)
