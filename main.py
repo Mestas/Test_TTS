@@ -60,10 +60,10 @@ st.markdown("---")
 
 files = 'https://github.com/Mestas/Books/zengguofan3.txt'
 
-selected = st.sidebar.selectbox("选择要朗读的文本：", files)
-st.sidebar.markdown(f"共 `{len(files)}` 个文件")
+# selected = st.sidebar.selectbox("选择要朗读的文本：", files)
+# st.sidebar.markdown(f"共 `{len(files)}` 个文件")
 
-with open(selected, encoding="utf-8") as f:
+with open(files, encoding="utf-8") as f:
     content = f.read()
 st.subheader(Path(selected).name)
 st.text_area("内容预览：", value=content, height=300)
