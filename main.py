@@ -58,7 +58,12 @@ st.markdown("---")
 # if not files:
 #     st.sidebar.warning("该目录下没有 .txt 文件"); st.stop()
 
-files = 'https://github.com/Mestas/Books/zengguofan3.txt'
+path_str = 'https://github.com/Mestas/Books/zengguofan3.txt'
+path = pathlib.Path(path_str.strip())
+if not path.is_file() or path.suffix.lower() != ".txt":
+        st.error("❌ 文件不存在或不是 txt"); st.stop()
+text = path.read_text(encoding="utf-8")
+st.write(f"📄 已加载：{path.name}  （{len(text)} 字）")
 
 # selected = st.sidebar.selectbox("选择要朗读的文本：", files)
 # st.sidebar.markdown(f"共 `{len(files)}` 个文件")
@@ -69,7 +74,7 @@ files = 'https://github.com/Mestas/Books/zengguofan3.txt'
 
 
 
-st.text_area("内容预览：", value=content, height=300)
+st.text_area("内容预览：", value=text, height=300)
 
 # repo_url = st.text_input(
 #                 "GitHub仓库URL",
@@ -89,7 +94,7 @@ st.text_area("内容预览：", value=content, height=300)
 if st.button("🎙️ 合成语音", type="primary"):
     with st.spinner("正在调用私有 TTS API，请稍候…"):
         start = time.time()
-        audio_bytes = synthesize(content)
+        audio_bytes = synthesize(text)
         cost = time.time() - start
     st.success(f"合成完成！耗时 {cost:.1f} s")
     st.audio(audio_bytes, format="audio/mp3")
