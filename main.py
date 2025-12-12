@@ -69,6 +69,10 @@ files = 'https://github.com/Mestas/Books/zengguofan3.txt'
 
 
 content = files.read()
+if content is Not None:
+    st.write(content)
+else:
+    st.write('no book')
 st.text_area("内容预览：", value=content, height=300)
 
 # repo_url = st.text_input(
