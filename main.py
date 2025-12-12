@@ -50,15 +50,15 @@ st.set_page_config(page_title="文件夹 TTS 播放器", layout="centered")
 st.title("📁 私有 TTS 网络播放器")
 st.markdown("---")
 
-folder = st.sidebar.text_input("输入github绝对路径", value=str('https://github.com/Mestas/Books'))
-if not os.path.isdir(folder):
-    st.sidebar.error("路径无效"); st.stop()
+# folder = st.sidebar.text_input("输入github绝对路径", value=str('https://github.com/Mestas/Books'))
+# if not os.path.isdir(folder):
+#     st.sidebar.error("路径无效"); st.stop()
 
-files = sorted(glob.glob(os.path.join(folder, "*.txt")))
-if not files:
-    st.sidebar.warning("该目录下没有 .txt 文件"); st.stop()
+# files = sorted(glob.glob(os.path.join(folder, "*.txt")))
+# if not files:
+#     st.sidebar.warning("该目录下没有 .txt 文件"); st.stop()
 
-# files = 'https://github.com/Mestas/Books/zengguofan3.txt'
+files = 'https://github.com/Mestas/Books/zengguofan3.txt'
 
 selected = st.sidebar.selectbox("选择要朗读的文本：", files)
 st.sidebar.markdown(f"共 `{len(files)}` 个文件")
