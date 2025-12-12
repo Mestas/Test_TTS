@@ -1,75 +1,64 @@
-# tts_player.py
-import os, glob, re, time, requests, streamlit as st
-from pathlib import Path
-import pathlib
+# st_test_tts.py
+import streamlit as st, requests, time, pathlib, io
 
-# ↓↓↓ 改成你的私有 TTS 接口 ↓↓↓
-API_URL = "https://tts-ms-ra-forwarder-production-e395.up.railway.app/api/ra"
-VOICE   = "zh-CN-XiaoxiaoNeural"   # 可换 YunxiNeural 等
-CHUNK   = 2800                     # 每段最大字数（<3000）
+# ========== 配置 ==========
+API_URL = "https://tts-xxxx.up.railway.app/api/ra"  # ← 你的私有地址
+VOICE   = "zh-CN-XiaoxiaoNeural"
+MAX_CHUNK = 2800   # 单段上限（Edge-TTS 建议 <3k）
 
+# ========== 逻辑 ==========
 @st.cache_data(show_spinner=False)
 def tts_chunk(text: str) -> bytes:
-    """调用私有 API，返回 MP3 二进制"""
-    payload = {
-        "text": text,
-        "voice": VOICE,
-        "rate": "+0%",
-        "volume": "+0%",
-        "format": "audio-24khz-48kbitrate-mono-mp3"
-    }
+    payload = dict(
+        text=text,
+        voice=VOICE,
+        rate="+0%",
+        volume="+0%",
+        format="audio-24khz-48kbitrate-mono-mp3",
+    )
     resp = requests.post(API_URL, json=payload, timeout=60)
     resp.raise_for_status()
     return resp.content
 
-def merge_audio(parts: list[bytes]) -> bytes:
-    """简单合并 MP3：直接拼二进制即可（Edge-TTS 返回的同为 24 kHz mono）"""
+def synthesize(long_text: str) -> bytes:
+    if len(long_text) <= MAX_CHUNK:
+        return tts_chunk(long_text)
+    # 按句号分段
+    parts, para = [], ""
+    for s in long_text.split("。"):
+        if len(para + s) <= MAX_CHUNK:
+            para += s + "。"
+        else:
+            parts.append(tts_chunk(para))
+            para = s + "。"
+    if para:
+        parts.append(tts_chunk(para))
     return b"".join(parts)
 
-def synthesize(long_text: str) -> bytes:
-    """超长文本分段合成"""
-    if len(long_text) <= CHUNK:
-        return tts_chunk(long_text)
-    # 按句号分割，避免中途断句
-    sentences = re.findall(r'[^。]*.?', long_text)
-    buffer, current, parts = "", "", []
-    prog = st.progress(0)
-    for idx, sent in enumerate(sentences):
-        if len(current) + len(sent) <= CHUNK:
-            current += sent
-        else:
-            parts.append(tts_chunk(current))
-            current = sent
-        prog.progress((idx + 1) / len(sentences))
-    if current:
-        parts.append(tts_chunk(current))
-    prog.empty()
-    return merge_audio(parts)
-
-# -------------------- Streamlit UI --------------------
-st.set_page_config(page_title="文件夹 TTS 播放器", layout="centered")
-st.title("📁 私有 TTS 网络播放器")
+# ========== UI ==========
+st.set_page_config(page_title="TTS 手写测试", layout="centered")
+st.title("✍️ 手写文字 · TTS 测试播放器")
 st.markdown("---")
 
+with st.form("form"):
+    text = st.text_area("请输入要合成的文字（支持回车换行）：", height=120,
+                        value="你好，这是一条手写测试，能听到就说明私有 TTS API 正常工作！")
+    submitted = st.form_submit_button("🎙️ 合成并播放", type="primary")
 
-
-text = '你好，请播放'
-
-
-
-st.text_area("内容预览：", value=text, height=300)
-
-                        
-if st.button("🎙️ 合成语音", type="primary"):
-    # with st.spinner("正在调用私有 TTS API，请稍候…"):
-    #     start = time.time()
-    #     audio_bytes = synthesize(text)
-    #     cost = time.time() - start
-    # st.success(f"合成完成！耗时 {cost:.1f} s")
-    st.audio(text, format="audio/mp3")
+if submitted:
+    if not text.strip():
+        st.warning("文字不能为空"); st.stop()
+    with st.spinner("正在调用私有 TTS API …"):
+        t0 = time.time()
+        try:
+            audio_bytes = synthesize(text.strip())
+        except Exception as e:
+            st.error(f"❌ 合成失败：{e}"); st.stop()
+    st.success(f"✅ 合成完成！耗时 {time.time()-t0:.1f}s")
+    st.audio(audio_bytes, format="audio/mp3")
     st.download_button(
         label="⬇️ 下载 MP3",
         data=audio_bytes,
-        file_name=Path(selected).with_suffix(".mp3").name,
+        file_name=f"tts_{int(time.time())}.mp3",
         mime="audio/mp3"
     )
