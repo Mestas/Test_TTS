@@ -50,13 +50,15 @@ st.set_page_config(page_title="文件夹 TTS 播放器", layout="centered")
 st.title("📁 私有 TTS 网络播放器")
 st.markdown("---")
 
-folder = st.sidebar.text_input("输入github绝对路径", value=str('https://github.com/Mestas/Books/zengguofan3.txt'))
+folder = st.sidebar.text_input("输入github绝对路径", value=str('https://github.com/Mestas/Books'))
 if not os.path.isdir(folder):
     st.sidebar.error("路径无效"); st.stop()
 
 files = sorted(glob.glob(os.path.join(folder, "*.txt")))
 if not files:
     st.sidebar.warning("该目录下没有 .txt 文件"); st.stop()
+
+# files = 'https://github.com/Mestas/Books/zengguofan3.txt'
 
 selected = st.sidebar.selectbox("选择要朗读的文本：", files)
 st.sidebar.markdown(f"共 `{len(files)}` 个文件")
@@ -66,6 +68,21 @@ with open(selected, encoding="utf-8") as f:
 st.subheader(Path(selected).name)
 st.text_area("内容预览：", value=content, height=300)
 
+# repo_url = st.text_input(
+#                 "GitHub仓库URL",
+#                 placeholder="https://github.com/Mestas/Books",
+#                 help="可包含子目录路径"
+#             )
+            
+#             if repo_url and st.button("🔄 获取文件列表", type="primary"):
+#                 with st.spinner("正在获取文件..."):
+#                     files = github_reader.get_files(repo_url)
+#                     if files:
+#                         st.session_state.github_files = files
+#                         st.success(f"找到 {len(files)} 个文件")
+#                     else:
+#                         st.error("未找到txt文件")
+                        
 if st.button("🎙️ 合成语音", type="primary"):
     with st.spinner("正在调用私有 TTS API，请稍候…"):
         start = time.time()
