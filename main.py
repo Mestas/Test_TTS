@@ -51,54 +51,22 @@ st.set_page_config(page_title="文件夹 TTS 播放器", layout="centered")
 st.title("📁 私有 TTS 网络播放器")
 st.markdown("---")
 
-# folder = st.sidebar.text_input("输入github绝对路径", value=str('https://github.com/Mestas/Books'))
-# if not os.path.isdir(folder):
-#     st.sidebar.error("路径无效"); st.stop()
 
-# files = sorted(glob.glob(os.path.join(folder, "*.txt")))
-# if not files:
-#     st.sidebar.warning("该目录下没有 .txt 文件"); st.stop()
 
-path_str = 'https://github.com/Mestas/Books/zengguofan3.txt'
-path = pathlib.Path(path_str.strip())
-if not path.is_file() or path.suffix.lower() != ".txt":
-        st.error("❌ 文件不存在或不是 txt"); st.stop()
-text = path.read_text(encoding="utf-8")
-st.write(f"📄 已加载：{path.name}  （{len(text)} 字）")
-
-# selected = st.sidebar.selectbox("选择要朗读的文本：", files)
-# st.sidebar.markdown(f"共 `{len(files)}` 个文件")
-
-# with open(files, encoding="utf-8") as f:
-#     content = f.read()
-# st.subheader(Path(selected).name)
+text = '你好，请播放'
 
 
 
 st.text_area("内容预览：", value=text, height=300)
 
-# repo_url = st.text_input(
-#                 "GitHub仓库URL",
-#                 placeholder="https://github.com/Mestas/Books",
-#                 help="可包含子目录路径"
-#             )
-            
-#             if repo_url and st.button("🔄 获取文件列表", type="primary"):
-#                 with st.spinner("正在获取文件..."):
-#                     files = github_reader.get_files(repo_url)
-#                     if files:
-#                         st.session_state.github_files = files
-#                         st.success(f"找到 {len(files)} 个文件")
-#                     else:
-#                         st.error("未找到txt文件")
                         
 if st.button("🎙️ 合成语音", type="primary"):
-    with st.spinner("正在调用私有 TTS API，请稍候…"):
-        start = time.time()
-        audio_bytes = synthesize(text)
-        cost = time.time() - start
-    st.success(f"合成完成！耗时 {cost:.1f} s")
-    st.audio(audio_bytes, format="audio/mp3")
+    # with st.spinner("正在调用私有 TTS API，请稍候…"):
+    #     start = time.time()
+    #     audio_bytes = synthesize(text)
+    #     cost = time.time() - start
+    # st.success(f"合成完成！耗时 {cost:.1f} s")
+    st.audio(text, format="audio/mp3")
     st.download_button(
         label="⬇️ 下载 MP3",
         data=audio_bytes,
