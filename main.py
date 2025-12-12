@@ -50,7 +50,7 @@ st.set_page_config(page_title="文件夹 TTS 播放器", layout="centered")
 st.title("📁 私有 TTS 网络播放器")
 st.markdown("---")
 
-folder = st.sidebar.text_input("https://github.com/Mestas/Books/", value=str(Path.home() / "txt"))
+folder = st.sidebar.text_input("https://github.com/Mestas/Books/", value=str(https://github.com/Mestas/Books/ "txt"))
 if not os.path.isdir(folder):
     st.sidebar.error("路径无效"); st.stop()
 
