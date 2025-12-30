@@ -2,7 +2,7 @@
 import streamlit as st, requests, time, pathlib, io
 
 # ========== 配置 ==========
-API_URL = "ms-ra-forwarder-production-e395.up.railway.app"  # ← 你的私有地址
+API_URL = "RcTDoGnhP4O0ZqQbUiqoI0vS"  # ← 你的私有地址
 VOICE   = "female_chinese"
 MAX_CHUNK = 2000   # 单段上限（Edge-TTS 建议 <3k）
 
