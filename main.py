@@ -3,8 +3,8 @@ import streamlit as st, requests, time, pathlib, io
 
 # ========== 配置 ==========
 API_URL = "ms-ra-forwarder-production-e395.up.railway.app"  # ← 你的私有地址
-VOICE   = "zh-CN-XiaoxiaoNeural"
-MAX_CHUNK = 2800   # 单段上限（Edge-TTS 建议 <3k）
+VOICE   = "female_chinese"
+MAX_CHUNK = 2000   # 单段上限（Edge-TTS 建议 <3k）
 
 # ========== 逻辑 ==========
 @st.cache_data(show_spinner=False)
